@@ -1,0 +1,13 @@
+# Default configuration for Checkov
+# Configured for Azure deployments using Terraform
+skip-check:
+  - CKV_AWS_*  # Skip AWS-related checks
+  - CKV_GCP_*  # Skip GCP-related checks
+
+download-external-modules: true
+
+evaluate-variables: true
+
+mask:
+  - azurerm_key_vault_secret:admin_password,user_passwords
+  - azurerm_storage_account:access_keys
