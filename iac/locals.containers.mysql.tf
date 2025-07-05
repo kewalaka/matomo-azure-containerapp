@@ -3,8 +3,8 @@ locals {
     name         = "mariadb"
     azure_name   = "ca-matomo-db-${var.env_code}"
     image        = "mariadb:10.11"
-    cpu          = 0.5
-    memory       = "1Gi"
+    cpu          = 0.25
+    memory       = "0.5Gi"
     max_replicas = 1
     min_replicas = 1
     env_vars = {

@@ -49,3 +49,45 @@ Entry Point: Nginx Container
 - <https://github.com/matomo-org/docker>
 
 - <https://github.com/libresh/compose-matomo/tree/master>
+
+## Troubleshooting
+
+```bash
+
+az containerapp list -o table
+
+db_container=ca-matomo-db-dev
+rg=rg-matomo-azure-containerapp-dev
+
+# general troubleshooting
+az containerapp exec -n $db_container -g $rg
+az containerapp logs show -n $db_container -g $rg --follow --tail 30
+
+# Check if MariaDB is actually running and accepting connections
+az containerapp exec -n $db_container -g $rg 
+
+mysql -u root -p$MYSQL_ROOT_PASSWORD -e "SELECT 1;"
+mysql -u root -p$MYSQL_ROOT_PASSWORD -e "SHOW DATABASES;"
+mysql -u matomo -p$MYSQL_PASSWORD -e "SELECT 1;"
+
+# Web/App troubleshooting
+web_container=ca-matomo-web-dev
+app_container=ca-matomo-app-dev
+rg=rg-matomo-azure-containerapp-dev
+
+# Check if matomo files exist in web container
+az containerapp exec -n $web_container -g $rg --command "ls -la /var/www/html/"
+
+# Check if matomo files exist in app container  
+az containerapp exec -n $app_container -g $rg --command "ls -la /var/www/html/"
+
+# If the entrypoint for the app container fails to run, then matomo
+# files will be missing from /var/www/html.  These are copied to 
+# this location by the /entrypoint.sh script
+
+# if this partially completes, it can lead to an issue if the matomo.php
+# file exists - as this is used as the check
+
+# a workaround is to re-run the entrypoint script:
+# /var/www/html $ /entrypoint.sh
+```

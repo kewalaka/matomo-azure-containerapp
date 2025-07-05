@@ -83,6 +83,28 @@ module "container_apps" {
         args          = try(each.value.args, null)
       }
     ]
+    init_containers = [
+      for init_container in try(each.value.init_containers, []) : {
+        name  = init_container.name
+        image = init_container.image
+
+        env = concat(
+          [for k, v in try(each.value.env_vars, []) : {
+            name  = k
+            value = v
+          }],
+          [for k, v in try(each.value.secrets, []) : {
+            name        = k
+            secret_name = v
+          }]
+        )
+
+        volume_mounts = init_container.volume_mounts
+        command       = try(init_container.command, null)
+        args          = try(init_container.args, null)
+      }
+    ]
+
     min_replicas = try(each.value.min_replicas, 0)
     max_replicas = try(each.value.max_replicas, 10)
 
@@ -90,7 +112,6 @@ module "container_apps" {
     volumes = each.value.volumes
   }
 
-  # Dynamic ingress configuration
   ingress = each.value.ingress
 
   managed_identities = {

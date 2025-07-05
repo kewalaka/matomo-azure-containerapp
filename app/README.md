@@ -20,6 +20,9 @@ curl http://localhost:8080
 ## Tests
 
 ```bash
+# source environment vars if needed ignoring comment lines
+export $(grep -v '^#' db.env | grep -v '^$' | xargs)
+
 # Check if database is accessible
 docker compose exec db mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "SHOW DATABASES;"
 

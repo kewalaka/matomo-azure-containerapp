@@ -51,5 +51,46 @@ locals {
       external_enabled = true
       transport        = "http"
     }
+    # Init container to check app container and storage readiness
+    init_containers = [
+      {
+        name    = "wait-for-app-and-storage"
+        cpu     = 0.25
+        memory  = "0.5Gi"
+        image   = "alpine:latest"
+        command = ["/bin/sh"]
+        args = [
+          "-c",
+          <<-EOT
+            # Wait for app container to be ready
+            echo "Waiting for app container at ${local.container_matomo_app.azure_name}:9000..."
+            while ! nc -z ${local.container_matomo_app.azure_name} 9000; do
+              echo "App container not ready, waiting..."
+              sleep 5
+            done
+            echo "App container is ready!"
+            
+            # Check storage is readable and has required files
+            echo "Testing storage read access..."
+            if [ -f /var/www/html/index.php ]; then
+              echo "Storage is readable and Matomo files are present!"
+            else
+              echo "Storage is not readable or Matomo files are missing!"
+              echo "Contents of /var/www/html:"
+              ls -la /var/www/html/
+              exit 1
+            fi
+            
+            echo "Nginx init container completed successfully!"
+          EOT
+        ]
+        volume_mounts = [
+          {
+            name = "matomo-data"
+            path = "/var/www/html"
+          }
+        ]
+      }
+    ]
   }
 }
