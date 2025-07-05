@@ -6,7 +6,7 @@ terraform {
     # https://developer.hashicorp.com/terraform/language/providers/requirements#best-practices-for-provider-versions  
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.7"
+      version = "~> 4"
     }
   }
 

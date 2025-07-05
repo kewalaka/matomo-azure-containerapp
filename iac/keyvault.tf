@@ -9,8 +9,8 @@ ephemeral "random_password" "mysql_user_password" {
 }
 
 locals {
-  mysql_root_password_version = 1
-  mysql_user_password_version = 1
+  mysql_root_password_version = 2
+  mysql_user_password_version = 2
 }
 
 module "keyvault" {
@@ -33,8 +33,7 @@ module "keyvault" {
   role_assignments = {
     "terraform-keyvault-access" = {
       principal_id               = data.azurerm_client_config.current.object_id
-      principal_type             = "ServicePrincipal"
-      role_definition_id_or_name = "Key Vault Secrets User"
+      role_definition_id_or_name = "Key Vault Secrets Officer"
     }
   }
 
@@ -49,19 +48,9 @@ resource "azurerm_key_vault_secret" "mysql_root_password" {
   key_vault_id     = module.keyvault.resource_id
 }
 
-ephemeral "azurerm_key_vault_secret" "mysql_root_password" {
-  name         = azurerm_key_vault_secret.mysql_root_password.name
-  key_vault_id = module.keyvault.resource_id
-}
-
 resource "azurerm_key_vault_secret" "mysql_user_password" {
   name             = "mysql-user-password"
   value_wo         = ephemeral.random_password.mysql_user_password.result
   value_wo_version = local.mysql_user_password_version
   key_vault_id     = module.keyvault.resource_id
-}
-
-ephemeral "azurerm_key_vault_secret" "mysql_user_password" {
-  name         = azurerm_key_vault_secret.mysql_user_password.name
-  key_vault_id = module.keyvault.resource_id
 }

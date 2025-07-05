@@ -12,7 +12,6 @@ locals {
   storage_account_name           = "st${local.default_short_suffix}"
   keyvault_name                  = "kv${local.default_short_suffix}"
   container_app_environment_name = "cae-${local.default_suffix}"
-  ca_mysql_name                  = "ca-mysql"
   log_analytics_workspace_name   = "law-${local.default_suffix}"
 
   # tflint-ignore: terraform_unused_declarations
@@ -29,46 +28,28 @@ locals {
 }
 
 locals {
+  secret_definitions = {
+    mysql_root_password = {
+      name                = "mysql-root-password"
+      key_vault_secret_id = azurerm_key_vault_secret.mysql_root_password.versionless_id
+      identity            = "system"
+    }
+    mysql_user_password = {
+      name                = "mysql-user-password"
+      key_vault_secret_id = azurerm_key_vault_secret.mysql_user_password.versionless_id
+      identity            = "system"
+    }
+    nginx_config = {
+      name = "nginx-config"
+      value = templatefile("${path.module}/conf/matomo.conf", {
+        MATOMO_CONTAINER_APP_NAME_AND_PORT = "${local.container_matomo_app.azure_name}:${local.container_matomo_app.ingress.target_port}"
+      })
+    }
+  }
+
   container_definitions = {
-    db = {
-      name   = "mariadb"
-      image  = "mariadb:10.11"
-      cpu    = 0.5
-      memory = "1Gi"
-      env_vars = {
-        MARIADB_AUTO_UPGRADE           = "1"
-        MARIADB_DISABLE_UPGRADE_BACKUP = "1"
-        MARIADB_INITDB_SKIP_TZINFO     = "1"
-      }
-      secrets = {
-        MYSQL_ROOT_PASSWORD = "mysql-root-password"
-        MYSQL_PASSWORD      = "mysql-password"
-      }
-      # Additional db.env values...
-    }
-    app = {
-      name   = "matomo"
-      image  = "matomo:fpm-alpine"
-      cpu    = 0.5
-      memory = "1Gi"
-      env_vars = {
-        MATOMO_DATABASE_HOST          = "localhost" # Container Apps use localhost for multi-container
-        PHP_MEMORY_LIMIT              = "2048M"
-        MATOMO_DATABASE_ADAPTER       = "mysql"
-        MATOMO_DATABASE_TABLES_PREFIX = "matomo_"
-        MATOMO_DATABASE_DBNAME        = "matomo"
-        MATOMO_DATABASE_USERNAME      = "matomo"
-      }
-      secrets = {
-        MATOMO_DATABASE_PASSWORD = "mysql-password"
-      }
-    }
-    web = {
-      name   = "nginx"
-      image  = "nginx:alpine"
-      cpu    = 0.25
-      memory = "0.5Gi"
-      # Config volume mount for matomo.conf
-    }
+    db  = local.container_mysql
+    app = local.container_matomo_app
+    web = local.container_nginx
   }
 }

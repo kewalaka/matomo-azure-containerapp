@@ -15,12 +15,6 @@ resource "azurerm_storage_share" "matomo_data" {
   quota              = 50
 }
 
-resource "azurerm_storage_share" "matomo_config" {
-  name               = "matomo-config"
-  storage_account_id = azurerm_storage_account.this.id
-  quota              = 1
-}
-
 resource "azurerm_storage_share" "db_data" {
   name               = "db-data"
   storage_account_id = azurerm_storage_account.this.id
