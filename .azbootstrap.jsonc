@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0",
+  "environments": {
+    "dev": {
+      "EnvironmentName": "dev",
+      "ResourceGroupName": "rg-matomo-azure-containerapp-dev",
+      "DeploymentStackName": "azbootstrap-stack-dev-20250623180914",
+      "PlanGitHubEnvironmentName": "dev-iac-plan",
+      "ApplyGitHubEnvironmentName": "dev-iac-apply",
+      "TerraformStateStorageAccountName": "stmatomoazurecontainerap",
+      "Timestamp": "2025-06-23T18:11:37.8393870+12:00"
+    }
+  }
+}
