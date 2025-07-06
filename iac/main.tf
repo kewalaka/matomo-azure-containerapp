@@ -85,8 +85,10 @@ module "container_apps" {
     ]
     init_containers = [
       for init_container in try(each.value.init_containers, []) : {
-        name  = init_container.name
-        image = init_container.image
+        name   = init_container.name
+        cpu    = init_container.cpu
+        image  = init_container.image
+        memory = init_container.memory
 
         env = concat(
           [for k, v in try(each.value.env_vars, []) : {

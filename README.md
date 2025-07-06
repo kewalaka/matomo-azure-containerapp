@@ -81,6 +81,8 @@ az containerapp exec -n $web_container -g $rg --command "ls -la /var/www/html/"
 # Check if matomo files exist in app container  
 az containerapp exec -n $app_container -g $rg --command "ls -la /var/www/html/"
 
+az containerapp logs show -n $app_container -g $rg --follow --tail 30
+
 # If the entrypoint for the app container fails to run, then matomo
 # files will be missing from /var/www/html.  These are copied to 
 # this location by the /entrypoint.sh script
@@ -91,3 +93,13 @@ az containerapp exec -n $app_container -g $rg --command "ls -la /var/www/html/"
 # a workaround is to re-run the entrypoint script:
 # /var/www/html $ /entrypoint.sh
 ```
+
+## Issue - system checks fail
+
+The system checks time out before they can complete - to workaround this use the following link:
+
+```text
+https://<containerapp>.australiaeast.azurecontainerapps.io/index.php?module=Installation&action=databaseSetup
+```
+
+This will skip this step and move onto the database setup.
