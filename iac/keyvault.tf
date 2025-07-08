@@ -1,9 +1,9 @@
-ephemeral "random_password" "mysql_root_password" {
+resource "random_password" "mysql_root_password" {
   length           = 24
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-ephemeral "random_password" "mysql_user_password" {
+resource "random_password" "mysql_user_password" {
   length           = 24
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
@@ -42,15 +42,13 @@ module "keyvault" {
 }
 
 resource "azurerm_key_vault_secret" "mysql_root_password" {
-  name             = "mysql-root-password"
-  value_wo         = ephemeral.random_password.mysql_root_password.result
-  value_wo_version = local.mysql_root_password_version
-  key_vault_id     = module.keyvault.resource_id
+  name         = "mysql-root-password"
+  value        = random_password.mysql_root_password.result
+  key_vault_id = module.keyvault.resource_id
 }
 
 resource "azurerm_key_vault_secret" "mysql_user_password" {
-  name             = "mysql-user-password"
-  value_wo         = ephemeral.random_password.mysql_user_password.result
-  value_wo_version = local.mysql_user_password_version
-  key_vault_id     = module.keyvault.resource_id
+  name         = "mysql-user-password"
+  value        = random_password.mysql_user_password.result
+  key_vault_id = module.keyvault.resource_id
 }

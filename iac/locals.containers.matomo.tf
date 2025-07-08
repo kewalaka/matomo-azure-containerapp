@@ -8,7 +8,8 @@ locals {
     max_replicas = 1
     min_replicas = 1
     env_vars = {
-      MATOMO_DATABASE_HOST          = "${local.container_mysql.azure_name}"
+      #MATOMO_DATABASE_HOST          = "${local.container_mysql.azure_name}"
+      MATOMO_DATABASE_HOST          = "${local.mysql_server_name}.mysql.database.azure.com:3306"
       MATOMO_DATABASE_ADAPTER       = "mysql"
       MATOMO_DATABASE_TABLES_PREFIX = "matomo_"
       PHP_MEMORY_LIMIT              = "1024M"

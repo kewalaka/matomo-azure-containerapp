@@ -13,6 +13,7 @@ locals {
   keyvault_name                  = "kv${local.default_short_suffix}"
   container_app_environment_name = "cae-${local.default_suffix}"
   log_analytics_workspace_name   = "law-${local.default_suffix}"
+  mysql_server_name              = "mysql-${local.default_short_suffix}"
 
   # tflint-ignore: terraform_unused_declarations
   location = data.azurerm_resource_group.this.location
@@ -48,7 +49,7 @@ locals {
   }
 
   container_definitions = {
-    db  = local.container_mysql
+    #db  = local.container_mysql
     app = local.container_matomo_app
     web = local.container_nginx
   }

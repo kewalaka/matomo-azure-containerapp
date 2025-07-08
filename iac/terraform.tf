@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4"
     }
+    mysql = {
+      source  = "petoju/mysql"
+      version = "3.0.78"
+    }
   }
 
 }
@@ -35,3 +39,9 @@ provider "azurerm" {
   }
 }
 
+provider "mysql" {
+  endpoint = "${local.mysql_server_name}.mysql.database.azure.com:3306"
+  username = "mysqladmin@${local.mysql_server_name}"
+  password = random_password.mysql_root_password.result
+  tls      = true
+}

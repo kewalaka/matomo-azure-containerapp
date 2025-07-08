@@ -29,15 +29,15 @@ module "container_app_environment" {
 
   storages = {
     "matomo-data" = {
-      account_name = azurerm_storage_account.this.name
-      share_name   = azurerm_storage_share.matomo_data.name
-      access_key   = azurerm_storage_account.this.primary_access_key
+      account_name = module.storage_account.name
+      share_name   = "matomo-data"
+      access_key   = module.storage_account.resource.primary_access_key
       access_mode  = "ReadWrite"
     }
     "db-data" = {
-      account_name = azurerm_storage_account.this.name
-      share_name   = azurerm_storage_share.db_data.name
-      access_key   = azurerm_storage_account.this.primary_access_key
+      account_name = module.storage_account.name
+      share_name   = "db-data"
+      access_key   = module.storage_account.resource.primary_access_key
       access_mode  = "ReadWrite"
     }
   }
